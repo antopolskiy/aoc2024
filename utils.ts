@@ -35,3 +35,30 @@ export const simpleArrayEquals = (a1, a2) => {
   /* WARNING: arrays must not contain {objects} or behavior may be undefined */
   return JSON.stringify(a1) == JSON.stringify(a2);
 };
+
+function* cartesianIterator<T>(items: T[][]): Generator<T[]> {
+  const remainder = items.length > 1 ? cartesianIterator(items.slice(1)) : [[]];
+  for (let r of remainder) for (let h of items.at(0)!) yield [h, ...r];
+}
+
+export const cartesian = <T>(items: T[][]) => [...cartesianIterator(items)];
+
+export function generatePermutations<T>(elements: T[], length: number): T[][] {
+  const results: T[][] = [];
+
+  function generate(current: T[], depth: number): void {
+    if (depth === length) {
+      results.push([...current]);
+      return;
+    }
+
+    for (const element of elements) {
+      current.push(element);
+      generate(current, depth + 1);
+      current.pop();
+    }
+  }
+
+  generate([], 0);
+  return results;
+}
